@@ -1,3 +1,5 @@
+import{ API_BASE_URL } from './config.js';
+
 const lang = navigator.language.startsWith('ja') ? 'ja'
            : navigator.language.startsWith('en') ? 'en'
            : 'ko';
@@ -73,6 +75,9 @@ document.getElementById("labelAuthCode").textContent = t.authCode;
 document.getElementById("verifyBtn").textContent = t.verifyBtn;
 document.getElementById("submitBtn").textContent = t.submitBtn;
 
+document.getElementById("sendBtn").addEventListener("click", sendAuthCode);
+document.getElementById("verifyBtn").addEventListener("click", verifyAuthCode);
+
 let emailVerified = false;
 
 function sendAuthCode() {
@@ -82,7 +87,7 @@ function sendAuthCode() {
     return;
   }
 
-  fetch("/auth-code", {
+  fetch(`${API_BASE_URL}/auth-code`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email }),
@@ -99,7 +104,7 @@ function verifyAuthCode() {
   const email = document.getElementById("email").value;
   const authCode = document.getElementById("authCode").value;
 
-  fetch("/auth-code/validate", {
+  fetch(`${API_BASE_URL}/auth-code/validate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, authCode }),
@@ -129,7 +134,7 @@ document.getElementById("signupForm").addEventListener("submit", function (e) {
     country: document.getElementById("country").value,
   };
 
-  fetch("/join", {
+  fetch(`${API_BASE_URL}/join`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
