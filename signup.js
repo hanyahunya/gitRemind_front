@@ -137,6 +137,7 @@ document.getElementById("signupForm").addEventListener("submit", function (e) {
   fetch(`${API_BASE_URL}/join`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: 'include', // cookie
     body: JSON.stringify(data),
   })
     .then(res => {
