@@ -107,6 +107,7 @@ function verifyAuthCode() {
   fetch(`${API_BASE_URL}/auth-code/validate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include", // 쿠키를 받겠다고 선언
     body: JSON.stringify({ email, authCode }),
   })
     .then(res => {
@@ -134,7 +135,7 @@ document.getElementById("signupForm").addEventListener("submit", function (e) {
     country: document.getElementById("country").value,
   };
 
-  fetch(`${API_BASE_URL}/join`, {
+  fetch(`${API_BASE_URL}/member/join`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: 'include', // cookie
