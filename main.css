@@ -54,3 +54,21 @@ h1, h2 {
   border-radius: 6px;
   cursor: pointer;
 }
+
+.time-slot {
+  display: inline-block;
+  width: 60px;
+  margin: 5px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.time-slot.active {
+  background-color: #4caf50;
+  color: white;
+  border-color: #4caf50;
+}

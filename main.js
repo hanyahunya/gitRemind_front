@@ -5,7 +5,8 @@ const commitStatusEl = document.getElementById("commit-status");
 const usernameEl = document.getElementById("username");
 const applyBtn = document.getElementById("apply-btn");
 
-const allTimes = Array.from({ length: 24 }, (_, i) => `${i}:00`);
+// 1시부터 23시까지
+const allTimes = Array.from({ length: 23 }, (_, i) => `${i + 1}:00`);
 
 let selectedTimes = new Set();
 
@@ -35,7 +36,7 @@ function fetchAlarmSettings() {
   fetch(`${API_BASE_URL}/alarm`)
     .then(res => res.json())
     .then(data => {
-      selectedTimes = new Set(data); // assume array like ["9:00", "18:00"]
+      selectedTimes = new Set(data); // 예: ["9:00", "18:00"]
       renderTimeGrid();
     });
 }
