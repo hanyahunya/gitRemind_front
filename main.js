@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "./config.js";
+const API_BASE_URL = "http://localhost:8080";
 
 const timeGrid = document.getElementById("time-grid");
 const commitStatusEl = document.getElementById("commit-status");
