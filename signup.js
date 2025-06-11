@@ -144,7 +144,7 @@ document.getElementById("signupForm").addEventListener("submit", function (e) {
     .then(res => {
       if (res.ok) {
         alert(t.alertJoinSuccess);
-        window.location.href = "main.html"; // main 페이지로 이동
+        window.location.href = "index.html"; // main 페이지로 이동
       } else {
         throw new Error();
       }
