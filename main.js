@@ -138,3 +138,38 @@ applyBtn.onclick = () => {
 
 // 시작 시 유저네임 먼저 체크
 fetchGitUsername();
+
+const profileIcon = document.getElementById("profile-icon");
+const dropdownMenu = document.getElementById("dropdown-menu");
+const logoutBtn = document.getElementById("logout-btn");
+
+// 드롭다운 토글
+profileIcon.onclick = () => {
+  dropdownMenu.style.display = dropdownMenu.style.display === "block" ? "none" : "block";
+};
+
+// 로그아웃 처리
+logoutBtn.onclick = () => {
+  fetch("http://localhost:8080/member/logout", {
+    method: "POST",
+    credentials: "include",
+  })
+    .then(res => {
+      if (res.ok) {
+        alert("로그아웃되었습니다.");
+        location.reload(); // 또는 location.href = "/login.html"; 원하는 페이지로 이동
+      } else {
+        throw new Error();
+      }
+    })
+    .catch(() => {
+      alert("로그아웃 실패");
+    });
+};
+
+// 외부 클릭 시 드롭다운 닫기
+document.addEventListener("click", (event) => {
+  if (!event.target.closest(".profile-dropdown")) {
+    dropdownMenu.style.display = "none";
+  }
+});

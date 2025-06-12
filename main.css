@@ -72,3 +72,53 @@ h1, h2 {
   color: white;
   border-color: #4caf50;
 }
+
+.topbar {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+}
+
+.profile-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+#profile-icon {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #f0f6fc;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  min-width: 120px;
+  z-index: 1000;
+}
+
+.dropdown-menu a,
+.dropdown-menu button {
+  display: block;
+  padding: 10px;
+  color: #c9d1d9;
+  text-decoration: none;
+  background: none;
+  border: none;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+}
+
+.dropdown-menu a:hover,
+.dropdown-menu button:hover {
+  background-color: #238636;
+  color: white;
+}
