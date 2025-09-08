@@ -1,0 +1,63 @@
+.signup-container {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 30px;
+  width: 380px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  margin: 60px auto 0;
+}
+
+.signup-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #f0f6fc;
+}
+
+.signup-container label {
+  display: block;
+  margin-top: 15px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.signup-container input, 
+.signup-container select {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 5px;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  background-color: #0d1117;
+  color: #c9d1d9;
+}
+
+.signup-container button {
+  width: 100%;
+  margin-top: 15px;
+  padding: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.signup-container .submit-btn {
+  background-color: #238636;
+  color: white;
+}
+
+.signup-container .submit-btn:disabled {
+  background-color: #274b31;
+  cursor: not-allowed;
+  color: #8b949e;
+}
+
+.signup-container .secondary-btn {
+  background-color: #2f81f7;
+  color: white;
+}

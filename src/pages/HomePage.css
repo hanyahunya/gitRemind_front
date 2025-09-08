@@ -1,0 +1,69 @@
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #0d1117;
+    color: #c9d1d9;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #161b22;
+    border-bottom: 1px solid #30363d;
+  }
+  
+  .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #58a6ff;
+  }
+  
+  .auth-buttons button {
+    margin-left: 1rem;
+    background-color: #21262d;
+    border: 1px solid #30363d;
+    color: #c9d1d9;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .auth-buttons button:hover {
+    background-color: #30363d;
+  }
+  
+  .main-content {
+    text-align: center;
+    margin-top: 10vh;
+    padding: 2rem;
+  }
+  
+  .main-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .main-content p {
+    font-size: 1.2rem;
+    color: #8b949e;
+  }
+  
+  .get-started {
+    margin-top: 2rem;
+    background-color: #238636;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .get-started:hover {
+    background-color: #2ea043;
+  }
+  
