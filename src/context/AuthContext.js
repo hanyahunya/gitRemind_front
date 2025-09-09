@@ -1,54 +1,65 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../api/axiosConfig';
+import apiClient, { setupAuthInterceptor } from '../api/axiosConfig';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    // 앱이 처음 로드될 때, 서버에 쿠키 유효성을 확인하여 로그인 상태를 설정
-    const checkAuthStatus = async () => {
-      try {
-        await apiClient.get('/contributions/git-username');
-        setIsAuthenticated(true);
-      } catch (error) {
-        setIsAuthenticated(false);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // 💡 1. [추가] 세션 만료 시 호출될 함수. API 호출 없이 상태만 바꾼다.
+  const handleSessionExpired = useCallback(() => {
+    setIsAuthenticated(false);
+    navigate('/login'); // 로그인 페이지로 이동
+    console.log("Session expired, client state cleared.");
+  }, [navigate]);
 
-    checkAuthStatus();
-  }, []);
+  // 💡 2. [수정] 기존 logout 함수는 이제 UI에서만 사용.
+  const logout = useCallback(async () => {
+    try {
+      await apiClient.post('/member/logout');
+    } catch (error) {
+      console.error("로그아웃 API 호출에 실패했지만 클라이언트 측 로그아웃을 진행합니다:", error);
+    } finally {
+      setIsAuthenticated(false);
+      navigate('/');
+    }
+  }, [navigate]);
 
-  const login = () => {
-    setIsAuthenticated(true);
-    navigate('/main');
-  };
+  useEffect(() => {
+    // 💡 3. [수정] 인터셉터에 새 함수를 전달.
+    setupAuthInterceptor(handleSessionExpired);
 
-  const logout = async () => {
-    try {
-      await apiClient.post('/member/logout');
-    } finally {
-      setIsAuthenticated(false);
-      // 상태를 완전히 초기화하기 위해 페이지를 새로고침하며 이동
-      window.location.replace('/');
-    }
-  };
+    const checkAuthStatus = async () => {
+      try {
+        await apiClient.get('/contributions/git-username');
+        setIsAuthenticated(true);
+      } catch (error) {
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const value = { isAuthenticated, isLoading, login, logout };
+    checkAuthStatus();
+  }, [handleSessionExpired]);
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  const login = () => {
+    setIsAuthenticated(true);
+    navigate('/main');
+  };
+
+  const value = { isAuthenticated, isLoading, login, logout };
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {
-  return useContext(AuthContext);
+  return useContext(AuthContext);
 };
