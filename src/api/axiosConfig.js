@@ -26,8 +26,12 @@ export const setupAuthInterceptor = (handleSessionExpired) => {
     (response) => response,
     async (error) => {
       const originalRequest = error.config;
+      // [추가] 요청 config에서 skipAuthRefresh 플래그를 확인합니다.
+      const { skipAuthRefresh } = originalRequest;
 
-      if (error.response?.status === 403 && originalRequest.url !== '/refreshAccessToken' && !originalRequest._retry) {
+      // [수정] !skipAuthRefresh 조건을 추가합니다.
+      // 이 플래그가 true이면, 토큰 재발급 로직을 실행하지 않고 바로 에러를 반환합니다.
+      if (!skipAuthRefresh && error.response?.status === 403 && originalRequest.url !== '/refreshAccessToken' && !originalRequest._retry) {
         if (isRefreshing) {
           return new Promise((resolve, reject) => {
             failedQueue.push({ resolve, reject });
