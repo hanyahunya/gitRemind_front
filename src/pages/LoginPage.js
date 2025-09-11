@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation, Trans } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import apiClient from '../api/axiosConfig';
 import './LoginPage.css';
 
 const LoginPage = () => {
+  const { t } = useTranslation();
   const [loginId, setLoginId] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -18,19 +20,19 @@ const LoginPage = () => {
       if (response.data.success) {
         login(); // 로그인 상태 업데이트 및 /main으로 이동
       } else {
-        setMessage('아이디 또는 비밀번호를 확인하세요.');
+        setMessage(t('loginPage.invalidCredentials'));
       }
     } catch (error) {
-      setMessage('로그인 중 오류가 발생했습니다.');
+      setMessage(t('loginPage.loginError'));
     }
   };
 
   return (
     <div className="login-wrapper">
       <div className="login-box">
-        <h1 className="title">Sign in to gitremind</h1>
+        <h1 className="title">{t('loginPage.title')}</h1>
         <form className="login-form" onSubmit={handleSubmit}>
-          <label htmlFor="username">Username or email address</label>
+          <label htmlFor="username">{t('loginPage.usernameLabel')}</label>
           <input
             type="text"
             id="username"
@@ -38,7 +40,7 @@ const LoginPage = () => {
             onChange={(e) => setLoginId(e.target.value)}
             required
           />
-          <label htmlFor="password">Password</label>
+          <label htmlFor="password">{t('loginPage.passwordLabel')}</label>
           <input
             type="password"
             id="password"
@@ -47,11 +49,14 @@ const LoginPage = () => {
             required
           />
           {message && <p className="login-message">{message}</p>}
-          <button type="submit">Sign in</button>
+          <button type="submit">{t('loginPage.signInButton')}</button>
         </form>
         <p className="signup-link">
-          New to gitremind? <Link to="/signup">Create an account</Link>
+          <Trans i18nKey="loginPage.signupLink">
+            New to gitremind? <Link to="/signup">Create an account</Link>
+          </Trans>
         </p>
+        <Link to="/" className="back-link">{t('loginPage.backToHome', 'Back to Home')}</Link>
       </div>
     </div>
   );

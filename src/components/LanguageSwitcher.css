@@ -1,0 +1,67 @@
+/* src/components/LanguageSwitcher.css */
+
+.language-switcher {
+  position: fixed;
+  top: 15px;
+  left: 15px; /* right에서 left로 변경 */
+  z-index: 9999;
+}
+
+/* 기존 globe-button 스타일을 새로운 버튼 스타일로 변경 */
+.language-select-button {
+  background-color: #21262d;
+  border: 1px solid #30363d;
+  color: #c9d1d9;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.language-select-button:hover {
+  background-color: #30363d;
+}
+
+.dropdown-arrow {
+  margin-left: 8px;
+  font-size: 0.7rem;
+}
+
+.language-menu {
+  position: absolute;
+  top: 100%;
+  left: 0; /* right에서 left로 변경 */
+  margin-top: 5px;
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 5px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  min-width: 100px;
+}
+
+.language-menu button {
+  background: none;
+  border: none;
+  color: #c9d1d9;
+  padding: 8px 12px;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+}
+
+.language-menu button:hover {
+  background-color: #30363d;
+}
+
+.language-menu button:disabled {
+  color: #58a6ff;
+  cursor: default;
+  background: none;
+}

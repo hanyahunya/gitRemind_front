@@ -1,5 +1,8 @@
+// src/context/AuthContext.js
+
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+// useLocation을 react-router-dom에서 import 합니다.
+import { useNavigate, useLocation } from 'react-router-dom';
 import apiClient, { setupAuthInterceptor } from '../api/axiosConfig';
 
 const AuthContext = createContext(null);
@@ -8,10 +11,12 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  // useLocation 훅을 사용하여 location 객체를 가져옵니다.
+  const location = useLocation();
 
   const handleSessionExpired = useCallback(() => {
     setIsAuthenticated(false);
-    navigate('/login');
+    navigate('/');
     console.log("Session expired, client state cleared.");
   }, [navigate]);
 
@@ -31,20 +36,26 @@ export const AuthProvider = ({ children }) => {
 
     const checkAuthStatus = async () => {
       try {
-        // [수정] 요청 시 config 객체에 skipAuthRefresh: true 플래그를 추가합니다.
-        // 이 표식을 통해 인터셉터가 해당 요청은 토큰 재발급 로직에서 제외하도록 합니다.
-        await apiClient.get('/contributions/git-username', { skipAuthRefresh: true });
+        await apiClient.get('/contributions/git-username');
         setIsAuthenticated(true);
       } catch (error) {
-        // 인터셉터가 재발급을 시도하지 않으므로, 실패 시 바로 catch 블록으로 들어옵니다.
         setIsAuthenticated(false);
       } finally {
         setIsLoading(false);
       }
     };
 
-    checkAuthStatus();
-  }, [handleSessionExpired]);
+    // 현재 경로가 '/login' 또는 '/signup'이 아닌 경우에만 인증 상태를 확인합니다.
+    const publicPaths = ['/login', '/signup'];
+    if (!publicPaths.includes(location.pathname)) {
+      checkAuthStatus();
+    } else {
+      // 로그인/회원가입 페이지에서는 로딩 상태만 false로 변경합니다.
+      setIsLoading(false);
+      setIsAuthenticated(false);
+    }
+    // 의존성 배열에 location.pathname을 추가하여 URL이 변경될 때마다 이펙트가 실행되도록 합니다.
+  }, [handleSessionExpired, location.pathname]);
 
   const login = () => {
     setIsAuthenticated(true);

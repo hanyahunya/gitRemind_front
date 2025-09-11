@@ -1,3 +1,4 @@
+
 import axios from 'axios';
 
 const API_BASE_URL = "https://hanyahunya.com/gitremind/api";
@@ -26,12 +27,15 @@ export const setupAuthInterceptor = (handleSessionExpired) => {
     (response) => response,
     async (error) => {
       const originalRequest = error.config;
-      // [추가] 요청 config에서 skipAuthRefresh 플래그를 확인합니다.
-      const { skipAuthRefresh } = originalRequest;
 
-      // [수정] !skipAuthRefresh 조건을 추가합니다.
-      // 이 플래그가 true이면, 토큰 재발급 로직을 실행하지 않고 바로 에러를 반환합니다.
-      if (!skipAuthRefresh && error.response?.status === 403 && originalRequest.url !== '/refreshAccessToken' && !originalRequest._retry) {
+      // Check if the request should be retried
+      const status = error.response?.status;
+      // 401(Unauthorized) 또는 403(Forbidden)일 때 재발급 시도
+      const isAuthError = status === 401 || status === 403;
+      const isRefreshRequest = originalRequest.url === '/refreshAccessToken';
+      
+      // _retry 플래그로 이미 재시도된 요청인지 확인
+      if (isAuthError && !isRefreshRequest && !originalRequest._retry) {
         if (isRefreshing) {
           return new Promise((resolve, reject) => {
             failedQueue.push({ resolve, reject });
@@ -40,7 +44,7 @@ export const setupAuthInterceptor = (handleSessionExpired) => {
           .catch(err => Promise.reject(err));
         }
 
-        originalRequest._retry = true;
+        originalRequest._retry = true; // 재시도 플래그 설정
         isRefreshing = true;
 
         try {
@@ -50,7 +54,7 @@ export const setupAuthInterceptor = (handleSessionExpired) => {
         } catch (refreshError) {
           processQueue(refreshError);
           console.error("세션이 만료되어 로그아웃합니다.", refreshError);
-          handleSessionExpired();
+          handleSessionExpired(); // 세션 만료 처리 함수 호출
           return Promise.reject(refreshError);
         } finally {
           isRefreshing = false;

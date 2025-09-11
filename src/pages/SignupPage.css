@@ -22,7 +22,7 @@
   font-size: 14px;
 }
 
-.signup-container input, 
+.signup-container input,
 .signup-container select {
   width: 100%;
   box-sizing: border-box;
@@ -60,4 +60,16 @@
 .signup-container .secondary-btn {
   background-color: #2f81f7;
   color: white;
+}
+
+.back-link {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+  color: #58a6ff;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
 }

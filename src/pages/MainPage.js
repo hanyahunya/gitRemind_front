@@ -1,18 +1,40 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import apiClient from '../api/axiosConfig';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 import './MainPage.css';
-import profileImage from '../images/profile.png'; // 이미지 import
+import profileImage from '../images/profile.png';
 
 const allTimes = Array.from({ length: 23 }, (_, i) => `${i + 1}:00`);
 
 const MainPage = () => {
+  const { t } = useTranslation();
   const { logout } = useAuth();
+  const navigate = useNavigate();
   const [gitUsername, setGitUsername] = useState(null);
-  const [commitStatus, setCommitStatus] = useState('커밋 상태 확인 중...');
+  const [commitStatus, setCommitStatus] = useState(t('mainPage.statusChecking'));
   const [selectedTimes, setSelectedTimes] = useState(new Set());
   const [usernameInput, setUsernameInput] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const fetchAlarmSettings = useCallback(async () => {
+    try {
+      const { data } = await apiClient.get('/contributions/alarm');
+      setSelectedTimes(new Set(data.data.alarmHours.map(h => `${h}:00`)));
+    } catch (error) {
+      console.error("Failed to fetch alarm settings", error);
+    }
+  }, []);
+
+  const fetchCommitStatus = useCallback(async () => {
+    try {
+      const { data } = await apiClient.get('/contributions/status');
+      setCommitStatus(data.data.committed ? t('mainPage.committed') : t('mainPage.notCommitted'));
+    } catch (error) {
+      console.error("Failed to fetch commit status", error);
+    }
+  }, [t]);
 
   const fetchGitUsername = useCallback(async () => {
     try {
@@ -22,35 +44,25 @@ const MainPage = () => {
         fetchAlarmSettings();
         fetchCommitStatus();
       } else {
-        setGitUsername(''); // 유저네임이 등록되지 않은 상태
+        setGitUsername('');
       }
     } catch (error) {
       console.error("Failed to fetch GitHub username", error);
       setGitUsername('');
     }
-  }, []);
-
-  const fetchAlarmSettings = async () => {
-    try {
-      const { data } = await apiClient.get('/contributions/alarm');
-      setSelectedTimes(new Set(data.data.alarmHours.map(h => `${h}:00`)));
-    } catch (error) {
-      console.error("Failed to fetch alarm settings", error);
-    }
-  };
-
-  const fetchCommitStatus = async () => {
-    try {
-      const { data } = await apiClient.get('/contributions/status');
-      setCommitStatus(data.data.committed ? "오늘은 커밋을 완료했습니다." : "아직 커밋하지 않았습니다.");
-    } catch (error) {
-      console.error("Failed to fetch commit status", error);
-    }
-  };
+  }, [fetchAlarmSettings, fetchCommitStatus]);
 
   useEffect(() => {
     fetchGitUsername();
   }, [fetchGitUsername]);
+  
+  // Language change effect
+  useEffect(() => {
+    if(gitUsername) { // Re-fetch status only if username is loaded
+        fetchCommitStatus();
+    }
+  }, [t, gitUsername, fetchCommitStatus]);
+
 
   const handleUsernameSubmit = async () => {
     if (!usernameInput.trim()) return;
@@ -58,17 +70,17 @@ const MainPage = () => {
       await apiClient.put('/contributions/git-username', { gitUsername: usernameInput });
       fetchGitUsername();
     } catch (error) {
-      alert("깃허브 유저이름 등록에 실패했습니다.");
+      alert(t('mainPage.registrationFailed'));
     }
   };
-  
+
   const handleApply = async () => {
     const times = Array.from(selectedTimes).map(t => parseInt(t));
     try {
-        await apiClient.patch('/contributions/alarm', { alarmHours: times });
-        alert("적용 완료");
+      await apiClient.patch('/contributions/alarm', { alarmHours: times });
+      alert(t('mainPage.applySuccess'));
     } catch (error) {
-        alert("적용 실패");
+      alert(t('mainPage.applyFailed'));
     }
   };
 
@@ -91,8 +103,11 @@ const MainPage = () => {
           </button>
           {isDropdownOpen && (
             <div className="dropdown-menu">
-              <button>마이페이지</button>
-              <button onClick={logout}>로그아웃</button>
+              <button onClick={() => {
+                navigate('/mypage');
+                setIsDropdownOpen(false);
+              }}>{t('my')}</button>
+              <button onClick={logout}>{t('logout')}</button>
             </div>
           )}
         </div>
@@ -100,18 +115,18 @@ const MainPage = () => {
 
       <div className="container">
         <div id="username-wrapper">
-          <h1>{gitUsername === null ? '로딩 중...' : gitUsername || 'GitHub 유저명'}</h1>
+          <h1>{gitUsername === null ? t('mainPage.loading') : gitUsername || t('mainPage.githubUsername')}</h1>
           {gitUsername === '' && (
             <div id="username-input-area">
-              <p>깃허브 유저이름을 먼저 등록해주세요.</p>
-              <input 
-                type="text" 
-                id="username-input" 
-                placeholder="GitHub 유저이름 입력"
+              <p>{t('mainPage.registerPrompt')}</p>
+              <input
+                type="text"
+                id="username-input"
+                placeholder={t('mainPage.usernameInputPlaceholder')}
                 value={usernameInput}
                 onChange={(e) => setUsernameInput(e.target.value)}
               />
-              <button id="username-submit" onClick={handleUsernameSubmit}>등록</button>
+              <button id="username-submit" onClick={handleUsernameSubmit}>{t('mainPage.registerButton')}</button>
             </div>
           )}
         </div>
@@ -122,7 +137,7 @@ const MainPage = () => {
               <p id="commit-status">{commitStatus}</p>
             </div>
             <div id="grid-wrapper">
-              <h2>알람 시간 설정</h2>
+              <h2>{t('mainPage.alarmSettingsTitle')}</h2>
               <div id="time-grid">
                 {allTimes.map(time => (
                   <div
@@ -135,7 +150,7 @@ const MainPage = () => {
                 ))}
               </div>
             </div>
-            <button id="apply-btn" onClick={handleApply}>적용</button>
+            <button id="apply-btn" onClick={handleApply}>{t('mainPage.applyButton')}</button>
           </>
         )}
       </div>
